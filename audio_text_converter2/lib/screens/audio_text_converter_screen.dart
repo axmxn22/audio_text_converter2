@@ -1,31 +1,36 @@
-import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:speech_to_text/speech_to_text.dart' as stt;
-import 'package:flutter_tts/flutter_tts.dart';
-import 'package:file_picker/file_picker.dart';
+// Importation des bibliothèques nécessaires
+import 'dart:async'; // Pour le timer
+import 'package:flutter/material.dart'; // UI de base Flutter
+import 'package:font_awesome_flutter/font_awesome_flutter.dart'; // Pour les icônes FontAwesome
+import 'package:speech_to_text/speech_to_text.dart'
+    as stt; // Pour la reconnaissance vocale
+import 'package:flutter_tts/flutter_tts.dart'; // Pour la synthèse vocale (Text-to-Speech)
+import 'package:file_picker/file_picker.dart'; // Pour sélectionner un fichier audio
 
 void main() {
-  runApp(const AudioTextConverterApp());
+  runApp(
+      const AudioTextConverterApp()); // Point d’entrée principal de l’application
 }
 
+// Widget racine de l'application
 class AudioTextConverterApp extends StatelessWidget {
   const AudioTextConverterApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'AudioText Converter',
+      title: 'Convertisseur AudioTexte',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.indigo,
         scaffoldBackgroundColor: Colors.grey[100],
       ),
-      home: const AudioTextConverterScreen(),
+      home: const AudioTextConverterScreen(), // Écran principal
     );
   }
 }
 
+// Écran principal avec les deux onglets
 class AudioTextConverterScreen extends StatefulWidget {
   const AudioTextConverterScreen({super.key});
 
@@ -37,10 +42,9 @@ class AudioTextConverterScreen extends StatefulWidget {
 class _AudioTextConverterScreenState extends State<AudioTextConverterScreen>
     with TickerProviderStateMixin {
   late TabController _tabController;
-
   late stt.SpeechToText _speech;
   bool _isListening = false;
-  String _transcription = 'Your transcribed text will appear here...';
+  String _transcription = 'Votre texte transcrit apparaîtra ici...';
   String _selectedLang = 'fr_FR';
 
   Timer? _recordingTimer;
@@ -57,7 +61,6 @@ class _AudioTextConverterScreenState extends State<AudioTextConverterScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-
     _speech = stt.SpeechToText();
   }
 
@@ -147,19 +150,15 @@ class _AudioTextConverterScreenState extends State<AudioTextConverterScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('AudioText Converter'),
+        title: const Text('Convertisseur AudioTexte'),
         actions: [
           IconButton(
             icon: const FaIcon(FontAwesomeIcons.cog),
-            onPressed: () {
-              // TODO: paramètres
-            },
+            onPressed: () {},
           ),
           IconButton(
             icon: const FaIcon(FontAwesomeIcons.history),
-            onPressed: () {
-              // TODO: historique
-            },
+            onPressed: () {},
           ),
         ],
         bottom: TabBar(
@@ -167,16 +166,19 @@ class _AudioTextConverterScreenState extends State<AudioTextConverterScreen>
           tabs: const [
             Tab(
               icon: FaIcon(FontAwesomeIcons.microphone),
-              text: 'Audio to Text',
+              text: 'Audio en Texte',
             ),
-            Tab(icon: FaIcon(FontAwesomeIcons.keyboard), text: 'Text to Audio'),
+            Tab(
+              icon: FaIcon(FontAwesomeIcons.volumeHigh),
+              text: 'Texte en Audio',
+            ),
           ],
         ),
       ),
       body: TabBarView(
         controller: _tabController,
         children: [
-          // Audio to Text tab
+          // Onglet Audio en Texte
           Padding(
             padding: const EdgeInsets.all(16),
             child: ListView(
@@ -185,11 +187,10 @@ class _AudioTextConverterScreenState extends State<AudioTextConverterScreen>
                   children: [
                     Expanded(
                       child: ElevatedButton.icon(
-                        icon: const FaIcon(
-                          FontAwesomeIcons.fileAudio,
-                          color: Colors.blue,
-                        ),
-                        label: const Text('Choose File'),
+                        icon: const FaIcon(FontAwesomeIcons.fileAudio,
+                            color: Colors.blue),
+                        label: const Text('Choisir un fichier'),
+                        onPressed: _chooseAudioFile,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue[100],
                           foregroundColor: Colors.blue[800],
@@ -198,30 +199,25 @@ class _AudioTextConverterScreenState extends State<AudioTextConverterScreen>
                           ),
                           padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
-                        onPressed: _chooseAudioFile,
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: ElevatedButton.icon(
-                        icon: const FaIcon(
-                          FontAwesomeIcons.microphone,
-                          color: Colors.red,
-                        ),
-                        label: Text(_isListening ? 'Stop' : 'Record'),
+                        icon: const FaIcon(FontAwesomeIcons.microphone,
+                            color: Colors.red),
+                        label: Text(_isListening ? 'Arrêter' : 'Enregistrer'),
+                        onPressed:
+                            _isListening ? _stopListening : _startListening,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: _isListening
-                              ? Colors.red[400]
-                              : Colors.red[100],
+                          backgroundColor:
+                              _isListening ? Colors.red[400] : Colors.red[100],
                           foregroundColor: Colors.red[800],
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                           padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
-                        onPressed: _isListening
-                            ? _stopListening
-                            : _startListening,
                       ),
                     ),
                   ],
@@ -245,72 +241,48 @@ class _AudioTextConverterScreenState extends State<AudioTextConverterScreen>
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Row(
-                          children: List.generate(8, (i) => _buildWaveBar(i)),
-                        ),
-                        Text(
-                          _formatDuration(_recordingSeconds),
-                          style: TextStyle(
-                            color: Colors.grey[700],
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                            children:
+                                List.generate(8, (i) => _buildWaveBar(i))),
+                        Text(_formatDuration(_recordingSeconds)),
                         ElevatedButton.icon(
-                          icon: const FaIcon(
-                            FontAwesomeIcons.stop,
-                            color: Colors.white,
-                          ),
-                          label: const Text('Stop Recording'),
+                          icon: const FaIcon(FontAwesomeIcons.stop,
+                              color: Colors.white),
+                          label: const Text('Stop'),
+                          onPressed: _stopListening,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.red[600],
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          onPressed: _stopListening,
                         ),
                       ],
                     ),
                   ),
                 const SizedBox(height: 24),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Transcription Language',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    DropdownButton<String>(
-                      value: _selectedLang,
-                      items: const [
-                        DropdownMenuItem(
-                          value: 'en_US',
-                          child: Text('English (United States)'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'fr_FR',
-                          child: Text('French (France)'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'es_ES',
-                          child: Text('Spanish (Spain)'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'de_DE',
-                          child: Text('German (Germany)'),
-                        ),
-                      ],
-                      onChanged: (value) {
-                        if (value == null) return;
-                        setState(() {
-                          _selectedLang = value;
-                        });
-                      },
-                    ),
+                const Text('Langue de transcription',
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                const SizedBox(height: 8),
+                DropdownButton<String>(
+                  value: _selectedLang,
+                  items: const [
+                    DropdownMenuItem(
+                        value: 'en_US', child: Text('Anglais (États-Unis)')),
+                    DropdownMenuItem(
+                        value: 'fr_FR', child: Text('Français (France)')),
+                    DropdownMenuItem(
+                        value: 'es_ES', child: Text('Espagnol (Espagne)')),
+                    DropdownMenuItem(
+                        value: 'de_DE', child: Text('Allemand (Allemagne)')),
                   ],
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() {
+                        _selectedLang = value;
+                      });
+                    }
+                  },
                 ),
                 const SizedBox(height: 24),
                 Container(
@@ -321,16 +293,12 @@ class _AudioTextConverterScreenState extends State<AudioTextConverterScreen>
                     border: Border.all(color: Colors.grey.shade300),
                   ),
                   constraints: const BoxConstraints(minHeight: 120),
-                  child: SelectableText(
-                    _transcription,
-                    style: TextStyle(color: Colors.grey[800]),
-                  ),
+                  child: SelectableText(_transcription),
                 ),
               ],
             ),
           ),
-
-          // Text to Audio tab
+          // Onglet Texte en Audio
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -341,7 +309,7 @@ class _AudioTextConverterScreenState extends State<AudioTextConverterScreen>
                     maxLines: null,
                     expands: true,
                     decoration: InputDecoration(
-                      hintText: 'Type your text here...',
+                      hintText: 'Écrivez votre texte ici...',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -359,34 +327,30 @@ class _AudioTextConverterScreenState extends State<AudioTextConverterScreen>
                         isExpanded: true,
                         items: const [
                           DropdownMenuItem(
-                            value: 'en-US',
-                            child: Text('English (US)'),
-                          ),
+                              value: 'en-US', child: Text('Anglais (US)')),
                           DropdownMenuItem(
-                            value: 'fr-FR',
-                            child: Text('French (France)'),
-                          ),
+                              value: 'fr-FR', child: Text('Français (France)')),
                           DropdownMenuItem(
-                            value: 'es-ES',
-                            child: Text('Spanish (Spain)'),
-                          ),
+                              value: 'es-ES',
+                              child: Text('Espagnol (Espagne)')),
                           DropdownMenuItem(
-                            value: 'de-DE',
-                            child: Text('German (Germany)'),
-                          ),
+                              value: 'de-DE',
+                              child: Text('Allemand (Allemagne)')),
                         ],
                         onChanged: (value) {
-                          if (value == null) return;
-                          setState(() {
-                            _selectedVoiceLang = value;
-                          });
+                          if (value != null) {
+                            setState(() {
+                              _selectedVoiceLang = value;
+                            });
+                          }
                         },
                       ),
                     ),
                     const SizedBox(width: 12),
                     ElevatedButton.icon(
-                      icon: const FaIcon(FontAwesomeIcons.volumeUp, size: 18),
-                      label: const Text('Speak'),
+                      icon: const FaIcon(FontAwesomeIcons.volumeHigh, size: 18),
+                      label: const Text('Lire'),
+                      onPressed: _speakText,
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
                           vertical: 14,
@@ -396,7 +360,6 @@ class _AudioTextConverterScreenState extends State<AudioTextConverterScreen>
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      onPressed: _speakText,
                     ),
                   ],
                 ),
