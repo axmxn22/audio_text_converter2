@@ -1,4 +1,4 @@
-// @dart=3.8
+// @dart=2.17
 // Flutter web bootstrap script for package:audio_text_converter2/main.dart.
 //
 // Generated file. Do not edit.

@@ -62,12 +62,6 @@
       "languageVersion": "3.7"
     },
     {
-      "name": "flutter_lints",
-      "rootUri": "file:///Users/wocky.m/.pub-cache/hosted/pub.dev/flutter_lints-5.0.0",
-      "packageUri": "lib/",
-      "languageVersion": "3.5"
-    },
-    {
       "name": "flutter_plugin_android_lifecycle",
       "rootUri": "file:///Users/wocky.m/.pub-cache/hosted/pub.dev/flutter_plugin_android_lifecycle-2.0.28",
       "packageUri": "lib/",
@@ -120,12 +114,6 @@
       "rootUri": "file:///Users/wocky.m/.pub-cache/hosted/pub.dev/leak_tracker_testing-3.0.1",
       "packageUri": "lib/",
       "languageVersion": "3.2"
-    },
-    {
-      "name": "lints",
-      "rootUri": "file:///Users/wocky.m/.pub-cache/hosted/pub.dev/lints-5.1.1",
-      "packageUri": "lib/",
-      "languageVersion": "3.6"
     },
     {
       "name": "matcher",
@@ -245,7 +233,7 @@
       "name": "audio_text_converter2",
       "rootUri": "../",
       "packageUri": "lib/",
-      "languageVersion": "3.8"
+      "languageVersion": "2.17"
     }
   ],
   "generator": "pub",
